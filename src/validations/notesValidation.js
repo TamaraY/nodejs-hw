@@ -1,44 +1,32 @@
-import { celebrate, Joi, Segments } from 'celebrate';
-import mongoose from 'mongoose';
-import { TAGS } from '../constants/tags.js';
+import Joi from 'joi';
 
-const objectId = Joi.string().custom((value, helpers) => {
-  if (!mongoose.isValidObjectId(value)) {
-    return helpers.message('Invalid noteId');
-  }
-  return value;
-});
-
-export const getAllNotesSchema = celebrate({
-  [Segments.QUERY]: Joi.object({
-    page: Joi.number().integer().min(1).default(1),
-    perPage: Joi.number().integer().min(5).max(20).default(10),
-    tag: Joi.string().valid(...TAGS),
-    search: Joi.string().allow(''),
+export const getAllNotesSchema = {
+  query: Joi.object({
+    page: Joi.number().integer().min(1),
+    perPage: Joi.number().integer().min(1),
+    tag: Joi.string(),
+    search: Joi.string(),
   }),
-});
+};
 
-export const noteIdSchema = celebrate({
-  [Segments.PARAMS]: Joi.object({
-    noteId: objectId.required(),
+export const noteIdSchema = {
+  params: Joi.object({
+    noteId: Joi.string().hex().length(24).required(),
   }),
-});
+};
 
-export const createNoteSchema = celebrate({
-  [Segments.BODY]: Joi.object({
-    title: Joi.string().min(1).required(),
-    content: Joi.string().allow(''),
-    tag: Joi.string().valid(...TAGS),
+export const createNoteSchema = {
+  body: Joi.object({
+    title: Joi.string().required(),
+    content: Joi.string().required(),
+    tag: Joi.string().required(),
   }),
-});
+};
 
-export const updateNoteSchema = celebrate({
-  [Segments.PARAMS]: Joi.object({
-    noteId: objectId.required(),
+export const updateNoteSchema = {
+  body: Joi.object({
+    title: Joi.string(),
+    content: Joi.string(),
+    tag: Joi.string(),
   }),
-  [Segments.BODY]: Joi.object({
-    title: Joi.string().min(1),
-    content: Joi.string().allow(''),
-    tag: Joi.string().valid(...TAGS),
-  }).min(1),
-});
+};

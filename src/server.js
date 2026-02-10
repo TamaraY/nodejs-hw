@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
+import cookieParser from 'cookie-parser';
 
 import { connectMongoDB } from './db/connectMongoDB.js';
 
@@ -19,15 +20,16 @@ const app = express();
 await connectMongoDB();
 
 app.use(logger);
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
+app.use(cookieParser());
 
 app.get('/', (req, res) => {
   res.status(200).json({ message: 'API is running' });
 });
 
-app.use('/auth', authRoutes);
-app.use('/notes', notesRoutes);
+app.use(authRoutes);
+app.use(notesRoutes);
 
 app.use(notFoundHandler);
 app.use(errors());

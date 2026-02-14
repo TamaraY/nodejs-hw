@@ -9,19 +9,20 @@ cloudinary.config({
 
 export const saveFileToCloudinary = (buffer) => {
   return new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream(
+    const stream = cloudinary.uploader.upload_stream(
       {
         folder: 'avatars',
+        resource_type: 'image',
+        use_filename: true,
+        unique_filename: false,
+        overwrite: true,
       },
       (error, result) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(result);
-        }
+        if (error) return reject(error);
+        resolve(result);
       }
     );
 
-    Readable.from(buffer).pipe(uploadStream);
+    Readable.from(buffer).pipe(stream);
   });
 };
